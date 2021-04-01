@@ -20,6 +20,7 @@ export default class UserStore {
       store.commonStore.setToken(user.token);
       runInAction(() => (this.user = user));
       history.push("/activities");
+      store.modalStore.closeModal();
     } catch (error) {
       throw error;
     }
@@ -30,5 +31,25 @@ export default class UserStore {
     window.localStorage.removeItem("jwt");
     this.user = null;
     history.push("/");
+  };
+
+  getUser = async () => {
+    try {
+      const user = await agent.Account.current();
+      runInAction(() => (this.user = user));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  register = async (creds: UserFormValues) => {
+    try {
+      const user = await agent.Account.register(creds);
+      store.commonStore.setToken(user.token);
+      runInAction(() => (this.user = user));
+      history.push("/activities");
+      store.modalStore.closeModal();
+    } catch (error) {
+      throw error;
+    }
   };
 }
